@@ -152,9 +152,13 @@ export async function userProfileInitializer(
   )
 
   if (getUserProfileResponse) {
+    // Normalize locales from BFF
+    let locale = getUserProfileResponse.userProfile.accountSettings.localeAndTimeSettings.locale
+    locale = normalizeLocales([locale])
     console.log('ORGANIZATION : ', getUserProfileResponse.userProfile.organization)
-
-    await userService.profile$.publish(getUserProfileResponse.userProfile)
+    const profile = getUserProfileResponse.userProfile;
+    profile.accountSettings.localeAndTimeSettings.locales = locale; // z.B. aus normalizeLocales(...)
+    await userService.profile$.publish(profile);
   }
 }
 
